@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#102a43">
+    <meta name="description" content="Puncte și Pătrate — jocul clasic pentru doi jucători, în română și engleză.">
+    <title>Puncte și Pătrate</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#game-board" data-i18n="skipToBoard">Sari la tabla de joc</a>
+
+    <div class="app-shell">
+      <header class="site-header">
+        <a class="brand" href="#" aria-label="Puncte și Pătrate">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i><i></i>
+          </span>
+          <span>
+            <span class="eyebrow" data-i18n="eyebrow">Joc clasic pentru doi</span>
+            <span class="brand-title" data-i18n="title">Puncte și Pătrate</span>
+          </span>
+        </a>
+
+        <div class="language-switcher" role="group" aria-label="Limbă" data-i18n-aria="languageLabel">
+          <button class="language-button is-active" type="button" data-language="ro" aria-pressed="true">RO</button>
+          <button class="language-button" type="button" data-language="en" aria-pressed="false">EN</button>
+        </div>
+      </header>
+
+      <main class="game-layout">
+        <section class="control-card" aria-labelledby="controls-title">
+          <div class="control-copy">
+            <p class="section-kicker" data-i18n="letsPlay">Hai să jucăm</p>
+            <h1 id="controls-title" data-i18n="subtitle">Închide pătratele. Câștigă tabla.</h1>
+          </div>
+
+          <div class="controls">
+            <label class="size-control" for="board-size">
+              <span data-i18n="boardSize">Dimensiune tablă</span>
+              <span class="select-wrap">
+                <select id="board-size">
+                  <option value="small" data-i18n="sizeSmall">Mică · 4 × 4</option>
+                  <option value="medium" data-i18n="sizeMedium">Medie · 7 × 7</option>
+                  <option value="large" data-i18n="sizeLarge">Mare · 12 × 16</option>
+                </select>
+              </span>
+            </label>
+            <button class="button button-primary" id="new-game" type="button">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v6h-6"/></svg>
+              <span data-i18n="newGame">Joc nou</span>
+            </button>
+            <button class="button button-secondary" id="rules-button" type="button">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.4 2.4 0 0 1 4.63.9c0 1.6-2.33 1.75-2.33 3.1M12 17h.01"/></svg>
+              <span data-i18n="rules">Reguli</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="score-panel" aria-label="Scor" data-i18n-aria="scoreLabel">
+          <article class="player-card player-one is-current" data-player-card="0">
+            <span class="player-symbol" aria-hidden="true">X</span>
+            <span class="player-details">
+              <span class="player-name" data-i18n="player1">Jucătorul 1</span>
+              <span class="turn-badge" data-turn-badge="0" data-i18n="yourTurn">Rândul tău</span>
+            </span>
+            <strong class="score" id="score-player-1">0</strong>
+          </article>
+
+          <div class="turn-card" id="turn-card" aria-live="polite">
+            <span class="turn-label" data-i18n="currentTurn">La mutare</span>
+            <strong id="current-player"><span aria-hidden="true">X</span> Jucătorul 1</strong>
+          </div>
+
+          <article class="player-card player-two" data-player-card="1">
+            <span class="player-symbol" aria-hidden="true">O</span>
+            <span class="player-details">
+              <span class="player-name" data-i18n="player2">Jucătorul 2</span>
+              <span class="turn-badge" data-turn-badge="1" data-i18n="waiting">Așteaptă</span>
+            </span>
+            <strong class="score" id="score-player-2">0</strong>
+          </article>
+        </section>
+
+        <section class="board-card" aria-labelledby="board-heading">
+          <div class="board-topline">
+            <div>
+              <p class="section-kicker" data-i18n="boardKicker">Tabla de joc</p>
+              <h2 id="board-heading"><span data-i18n="sizeNameSmall">Mică</span> <span class="board-dimensions">4 × 4</span></h2>
+            </div>
+            <p class="move-counter"><span data-i18n="moves">Mutări</span> <strong id="move-count">0</strong></p>
+          </div>
+
+          <div class="status-message" id="status-message" role="status" aria-live="polite">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span data-i18n="startMessage">Jucătorul 1 începe. Alege o linie!</span>
+          </div>
+
+          <div class="board-scroll" id="game-board" tabindex="0" aria-label="Tabla de joc, 4 pe 4 pătrate" data-i18n-aria="boardLabel">
+            <div class="board-stage" id="board-stage">
+              <svg id="board-svg" xmlns="http://www.w3.org/2000/svg" role="group"></svg>
+            </div>
+          </div>
+          <p class="scroll-hint" id="scroll-hint" hidden>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M8 9l-3 3 3 3M16 9l3 3-3 3"/></svg>
+            <span data-i18n="scrollHint">Glisează pentru a explora tabla mare.</span>
+          </p>
+
+          <div class="game-over" id="game-over" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
+            <div class="celebration" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="result-icon" id="result-icon" aria-hidden="true">★</div>
+            <p class="section-kicker" data-i18n="gameOver">Joc încheiat</p>
+            <h2 id="result-title">Jucătorul 1 câștigă!</h2>
+            <p id="result-score">Scor final: 10 – 6</p>
+            <button class="button button-primary" id="play-again" type="button">
+              <span data-i18n="playAgain">Joacă din nou</span>
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span class="footer-dots" aria-hidden="true">•••</span>
+        <span data-i18n="footer">Puncte și Pătrate · Un joc pentru două minți istețe</span>
+      </footer>
+    </div>
+
+    <dialog class="rules-dialog" id="rules-dialog" aria-labelledby="rules-title">
+      <div class="dialog-header">
+        <div>
+          <p class="section-kicker" data-i18n="howToPlay">Cum se joacă</p>
+          <h2 id="rules-title" data-i18n="rulesTitle">Reguli simple, duel serios</h2>
+        </div>
+        <button class="icon-button" id="close-rules" type="button" aria-label="Închide" data-i18n-aria="close">×</button>
+      </div>
+      <ol class="rules-list">
+        <li><span>1</span><p data-i18n="rule1">Pe rând, fiecare jucător trasează o linie între două puncte vecine.</p></li>
+        <li><span>2</span><p data-i18n="rule2">Dacă închizi a patra latură a unui pătrat, îl revendici și mai joci o dată.</p></li>
+        <li><span>3</span><p data-i18n="rule3">Poți închide două pătrate dintr-o singură mutare — ambele sunt ale tale.</p></li>
+        <li><span>4</span><p data-i18n="rule4">După ce toate pătratele sunt ocupate, câștigă jucătorul cu scorul mai mare.</p></li>
+      </ol>
+      <div class="legend">
+        <span><i class="legend-x">X</i><b data-i18n="player1">Jucătorul 1</b></span>
+        <span><i class="legend-o">O</i><b data-i18n="player2">Jucătorul 2</b></span>
+      </div>
+      <button class="button button-primary dialog-action" id="got-it" type="button" data-i18n="gotIt">Am înțeles</button>
+    </dialog>
+
+    <script src="script.js"></script>
+  </body>
+</html>
