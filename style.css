@@ -488,6 +488,90 @@ select {
   letter-spacing: -0.035em;
 }
 
+.board-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.fullscreen-score {
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+
+.mini-score {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 10px;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 900;
+  border-radius: 10px;
+}
+
+.mini-score strong {
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.mini-score-one {
+  color: var(--player-one-deep);
+  background: var(--player-one-soft);
+}
+
+.mini-score-two {
+  color: var(--player-two-deep);
+  background: var(--player-two-soft);
+}
+
+.fullscreen-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 12px;
+  gap: 7px;
+  color: var(--ink);
+  font-size: 0.76rem;
+  font-weight: 800;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: white;
+  cursor: pointer;
+  transition: transform 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+
+.fullscreen-button:hover {
+  background: #f6f9fa;
+  box-shadow: 0 6px 16px rgba(16, 42, 67, 0.1);
+  transform: translateY(-1px);
+}
+
+.fullscreen-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fullscreen-button .collapse-icon {
+  display: none;
+}
+
+.board-card.is-fullscreen .fullscreen-button .expand-icon {
+  display: none;
+}
+
+.board-card.is-fullscreen .fullscreen-button .collapse-icon {
+  display: initial;
+}
+
 .board-dimensions {
   margin-left: 5px;
   color: var(--muted);
@@ -696,6 +780,70 @@ select {
 
 .scroll-hint svg {
   width: 18px;
+}
+
+body.board-fullscreen-active {
+  overflow: hidden;
+}
+
+.board-card.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  padding: clamp(10px, 2vw, 22px);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 10px;
+  border: 0;
+  border-radius: 0;
+  background: #f5f7f6;
+  box-shadow: none;
+}
+
+.board-card.is-fullscreen .board-topline,
+.board-card.is-fullscreen .status-message {
+  margin: 0;
+}
+
+.board-card.is-fullscreen .board-topline {
+  align-items: center;
+}
+
+.board-card.is-fullscreen .fullscreen-score {
+  display: flex;
+}
+
+.board-card.is-fullscreen .board-scroll {
+  min-height: 0;
+  max-height: none;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+    radial-gradient(circle, rgba(16, 42, 67, 0.13) 1px, transparent 1.5px);
+  background-size: auto, 18px 18px;
+}
+
+.board-card.is-fullscreen .board-stage,
+.board-card.is-fullscreen .board-stage[data-size] {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  place-items: center;
+}
+
+.board-card.is-fullscreen #board-svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.board-card.is-fullscreen .scroll-hint {
+  display: none;
 }
 
 .game-over {
@@ -1050,6 +1198,23 @@ footer {
     padding: 14px;
   }
 
+  .board-topline {
+    align-items: center;
+  }
+
+  .board-actions {
+    gap: 6px;
+  }
+
+  .fullscreen-button {
+    min-width: 38px;
+    padding: 0 9px;
+  }
+
+  .fullscreen-button span {
+    display: none;
+  }
+
   .board-scroll {
     max-height: 70vh;
     border-radius: 14px;
@@ -1057,6 +1222,45 @@ footer {
 
   .board-stage[data-size="medium"] {
     min-width: 510px;
+  }
+
+  .board-card.is-fullscreen {
+    padding: 8px;
+    gap: 7px;
+  }
+
+  .board-card.is-fullscreen .section-kicker {
+    display: none;
+  }
+
+  .board-card.is-fullscreen .board-topline h2 {
+    font-size: 1rem;
+  }
+
+  .board-card.is-fullscreen .board-dimensions {
+    margin-left: 2px;
+    font-size: 0.7em;
+  }
+
+  .board-card.is-fullscreen .move-counter {
+    min-width: 34px;
+    padding-inline: 8px;
+    text-align: center;
+  }
+
+  .board-card.is-fullscreen .move-counter span {
+    display: none;
+  }
+
+  .board-card.is-fullscreen .mini-score {
+    min-height: 32px;
+    padding: 0 7px;
+  }
+
+  .board-card.is-fullscreen .status-message {
+    min-height: 36px;
+    padding: 7px 10px;
+    font-size: 0.76rem;
   }
 
   .game-over {

@@ -12,6 +12,7 @@ Players take turns selecting an unused line between two neighboring dots. Comple
 - Romanian and English interface with an instant language switcher
 - Small (4 × 4), medium (7 × 7), and genuinely large (12 × 16) boards
 - Responsive, scroll-safe play area for phones, tablets, and desktops
+- Full-screen board mode that scales every board to the available display
 - Mouse, touch, and keyboard interaction with accessible labels and focus states
 - Animated lines, claimed boxes, status updates, and final results
 - Reset confirmation for active games

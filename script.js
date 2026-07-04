@@ -40,6 +40,8 @@
       currentTurn: "La mutare",
       boardKicker: "Tabla de joc",
       moves: "Mutări",
+      fullScreen: "Ecran complet",
+      exitFullScreen: "Ieși din ecran complet",
       startMessage: "Jucătorul 1 începe. Alege o linie!",
       nextTurnMessage: "{player} este la mutare.",
       claimedOne: "{player} a închis un pătrat și continuă!",
@@ -91,6 +93,8 @@
       currentTurn: "Current turn",
       boardKicker: "Game board",
       moves: "Moves",
+      fullScreen: "Full screen",
+      exitFullScreen: "Exit full screen",
       startMessage: "Player 1 starts. Pick a line!",
       nextTurnMessage: "{player} is up next.",
       claimedOne: "{player} closed a box and plays again!",
@@ -195,6 +199,7 @@
       this.status = { key: "startMessage", values: {}, scored: false };
       this.resultVisible = false;
       this.resultTimer = null;
+      this.fallbackFullscreen = false;
 
       this.elements = {
         sizeSelect: document.querySelector("#board-size"),
@@ -203,6 +208,7 @@
         rulesDialog: document.querySelector("#rules-dialog"),
         closeRules: document.querySelector("#close-rules"),
         gotIt: document.querySelector("#got-it"),
+        boardCard: document.querySelector(".board-card"),
         boardScroll: document.querySelector("#game-board"),
         boardStage: document.querySelector("#board-stage"),
         boardSvg: document.querySelector("#board-svg"),
@@ -210,6 +216,9 @@
         boardDimensions: document.querySelector(".board-dimensions"),
         moveCount: document.querySelector("#move-count"),
         scores: [document.querySelector("#score-player-1"), document.querySelector("#score-player-2")],
+        fullscreenScores: [document.querySelector("#fullscreen-score-player-1"), document.querySelector("#fullscreen-score-player-2")],
+        fullscreenButton: document.querySelector("#fullscreen-toggle"),
+        fullscreenLabel: document.querySelector("#fullscreen-label"),
         playerCards: [...document.querySelectorAll("[data-player-card]")],
         turnBadges: [...document.querySelectorAll("[data-turn-badge]")],
         currentPlayer: document.querySelector("#current-player"),
@@ -275,6 +284,9 @@
       });
 
       this.elements.playAgain.addEventListener("click", () => this.startGame(this.size));
+      this.elements.fullscreenButton.addEventListener("click", () => {
+        void this.toggleFullscreen();
+      });
       this.elements.rulesButton.addEventListener("click", () => this.openRules());
       this.elements.closeRules.addEventListener("click", () => this.elements.rulesDialog.close());
       this.elements.gotIt.addEventListener("click", () => this.elements.rulesDialog.close());
@@ -293,6 +305,16 @@
         if (!edge) return;
         event.preventDefault();
         this.handleEdge(edge, true);
+      });
+
+      document.addEventListener("fullscreenchange", () => this.syncFullscreenUI());
+      document.addEventListener("webkitfullscreenchange", () => this.syncFullscreenUI());
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && this.fallbackFullscreen) {
+          this.fallbackFullscreen = false;
+          this.syncFullscreenUI();
+          this.elements.fullscreenButton.focus();
+        }
       });
     }
 
@@ -329,11 +351,57 @@
 
       const brand = document.querySelector(".brand");
       if (brand) brand.setAttribute("aria-label", this.t("title"));
+      this.syncFullscreenUI();
       if (this.model) {
         this.updateDynamicUI();
         this.updateEdgeLabels();
         if (this.resultVisible) this.renderResult();
       }
+    }
+
+    fullscreenElement() {
+      return document.fullscreenElement || document.webkitFullscreenElement || null;
+    }
+
+    async toggleFullscreen() {
+      const nativeFullscreen = this.fullscreenElement() === this.elements.boardCard;
+      if (nativeFullscreen) {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen;
+        if (exit) await exit.call(document);
+        return;
+      }
+
+      if (this.fallbackFullscreen) {
+        this.fallbackFullscreen = false;
+        this.syncFullscreenUI();
+        return;
+      }
+
+      const request = this.elements.boardCard.requestFullscreen || this.elements.boardCard.webkitRequestFullscreen;
+      if (request) {
+        try {
+          await request.call(this.elements.boardCard);
+          this.syncFullscreenUI();
+          return;
+        } catch {
+          // A CSS fallback keeps the feature available when native full screen is restricted.
+        }
+      }
+
+      this.fallbackFullscreen = true;
+      this.syncFullscreenUI();
+    }
+
+    syncFullscreenUI() {
+      if (!this.elements?.boardCard) return;
+      const active = this.fallbackFullscreen || this.fullscreenElement() === this.elements.boardCard;
+      this.elements.boardCard.classList.toggle("is-fullscreen", active);
+      document.body.classList.toggle("board-fullscreen-active", active);
+      this.elements.fullscreenButton.setAttribute("aria-pressed", String(active));
+      const label = this.t(active ? "exitFullScreen" : "fullScreen");
+      this.elements.fullscreenButton.setAttribute("aria-label", label);
+      this.elements.fullscreenLabel.textContent = label;
+      if (active) this.elements.boardScroll.scrollTo({ top: 0, left: 0, behavior: "auto" });
     }
 
     startGame(size) {
@@ -546,6 +614,9 @@
       this.elements.boardSvg.setAttribute("aria-label", this.t("boardLabelDetailed", config));
       this.elements.moveCount.textContent = String(this.model.moveCount);
       this.elements.scores.forEach((score, index) => {
+        score.textContent = String(this.model.scores[index]);
+      });
+      this.elements.fullscreenScores.forEach((score, index) => {
         score.textContent = String(this.model.scores[index]);
       });
 
